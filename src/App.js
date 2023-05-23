@@ -1,14 +1,14 @@
 import Logo from "./logo.svg";
 import reactImage from "./Images/ReactImage.png";
-import "./App.css";
+import "./styles/App.css";
 import { globalsStyles } from "./constants";
-import appStyle from "./AppStyle.module.css";
+import appStyle from "./styles/AppStyle.module.css";
 import { Link } from "react-router-dom";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { AboutUs } from "./pages/AboutUs";
 import { ThemeProvider } from "@emotion/react";
-import { theme } from "./style.js";
+import { theme } from "./styles/style.js";
 // import env from "./.env"
 function App() {
   console.log(process.env.REACT_APP_HOSTED_URL);
