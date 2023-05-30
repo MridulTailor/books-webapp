@@ -1,24 +1,26 @@
 import {Button, TextField} from "@mui/material"
 import { MenuItem } from '@mui/material';
-import { Select } from '@mui/material';
+import { Select, Breadcrumbs, Typography } from '@mui/material';
 // import { useEffect } from "react";
 import { Formik } from "formik"
 import * as Yup from "yup"
-// export const Register = () => {
-//     return(<form>
-//         <TextField label="name"/>
-//     </form>)
-// }
+import axios from "axios"
+import { toast } from 'react-toastify';
+// import { useState } from "react";
+import { useNavigate } from "react-router-dom"
+import  authService from "../services/auth.service"
+import { Link } from "react-router-dom";
+
 export const Register = () => {
-    // const [firstname,setFirstName] = useState("Anant");
-    // const [lastname,setLastName] = useState("Patel");
-    // const [email,setEmail] = useState("anant.patel4762@gmail.com");
-    // const [password,setPassword] = useState("123");
-    // const [confirmpassword,setConfirmPassword] = useState("123");
-    // const [role,setRole] = useState();
+    // const [user, setUser] = useState([]);
     // useEffect(() => {
-    //     // console.log("This is before Change:"+firstname);
-    // });
+    //     axios.get("https://book-e-sell-node-api.vercel.app/api/user/all")
+    //     .then((res) => {
+    //         console.log(res.data);
+    //         // setUser(res.data);
+    //     });
+    // })
+    const navigate = useNavigate();
     const initialValues = {
         firstname: "",       
         lastname: "",
@@ -28,23 +30,53 @@ export const Register = () => {
         confirmpassword: ""
     }
     const validationSchema = Yup.object().shape({
-        firstname: Yup.string().min(3, "Firstname should atleast contain 3 characters"),
-        lastname: Yup.string().min(3, "Lastname should atleast contain 3 characters"),
-        email: Yup.string().email("Please enter a valid email"),
-        password: Yup.string().min(5,"Password must contain 5 character"),
-        confirmpassword: Yup.string().oneOf([Yup.ref('password'), null],"Password must be same")
+        firstname: Yup.string().min(3, "Firstname should atleast contain 3 characters").required("Please fill First name"),
+        lastname: Yup.string().min(3, "Lastname should atleast contain 3 characters").required("Please fill Last name"),
+        email: Yup.string().email("Please enter a valid email").required("Please fill Email address"),
+        password: Yup.string().min(5,"Password must contain 5 character").required("Please enter Password"),
+        confirmpassword: Yup.string().oneOf([Yup.ref('password'), null],"Password must be same").required("Please confirm the Password")
     })
 
-    const onFormSubmit = (values) => {
-        console.log(values)
+    const onFormSubmit = async (values) => {
+
+        // console.log(values);
+        var roleId = 0
+        if(values.role === "Buyer")
+        {
+            roleId = 3
+        }
+        else{
+            roleId = 2
+        }
+        const requestData = {
+            firstName: values.firstname,
+            lastName: values.lastname,
+            email: values.email,
+            roleId: roleId  ,
+            password: values.password,
+        }
+        //Tatvasoft API
+        await authService.create(requestData).then((res) => {
+            navigate("/login");
+            toast.success("Successfully Registered");
+        });
+
+        //Localhost:8000/api
+        // authService.create(values).then((res) => {
+        //     navigate("/login");
+        //     toast.success('Successfully Registered', {
+        //         position: "top-right",
+        //         autoClose: 3000,
+        //         hideProgressBar: false,
+        //         closeOnClick: true,
+        //         pauseOnHover: true,
+        //         draggable: true,
+        //         progress: undefined,
+        //         theme: "colored",
+        //     });
+        // });
     }
-    // const { values, errors, handleBlur, handleChange, handleSubmit } = useFormik({
-    //     initialValues: initialValues,
-    //     onSubmit:onFormSubmit
-    // });
-    // console.log(myFormik);
     return(
-            // onSubmit={handleSubmit}
         <div>
             <Formik
                 initialValues={initialValues}
@@ -60,15 +92,22 @@ export const Register = () => {
                         alignItems:"center",
                         rowGap:10,
                     }}>
-                        <div style={{
-                            fontSize:40,
+                    <Breadcrumbs separator="›" aria-label="breadcrumb">
+                        <Link underline="none" color="black" to="/" className="homeLink">
+                            Home
+                        </Link>
+                        <Typography color="#f15d54">Create An Account</Typography>
+                    </Breadcrumbs>
+                        {/* <div style={{
+                            fontSize:32,
                             fontWeight:"bolder",
                             color:"#2E2E2E",
                         }}>
                             Login or Create an Account
-                        </div>
+                        </div> */}
+                        <Typography variant="h4">Login or Create an Account</Typography>
                         <div style={{
-                            width:190,
+                            width:140,
                             height:0,
                             border:1,
                             borderStyle: "solid",
@@ -76,7 +115,7 @@ export const Register = () => {
                             marginBottom:30
                         }}> </div>
                         <div style={{
-                            marginLeft:162  ,
+                            marginLeft:155    ,
                             marginRight:"auto",
                             fontSize:20,
                             fontWeight:"bold",
@@ -282,16 +321,23 @@ export const Register = () => {
                         <Button variant="contained" type="submit" 
                         style={{
                             marginRight:"auto",
-                            marginLeft:164,
+                            marginLeft:155,
                             backgroundColor:"rgb(255,89,92)",
                             borderRadius:3,
-                            fontWeight:"bold"
+                            fontWeight:"bold",
+                            textTransform:"capitalize"
                         }}
                         >Register</Button>      
                     </div>
                 </form>    
             )} 
             </Formik>
+            {/* {user.map((item) => (
+                <div key={item.id}>
+                    <h3>{item.title}</h3>
+                    <span>{item.body}</span>
+                </div>
+            ))} */}
         </div>  
                   
     )
